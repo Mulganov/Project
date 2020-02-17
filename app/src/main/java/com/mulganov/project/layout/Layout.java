@@ -10,9 +10,16 @@ public class Layout {
     private int id;
     private ArrayList<Image> list = new ArrayList<Image>();
 
-    Layout(int id){
+    Layout(int id, String type){
         this.id = id;
-        Layouts.number++;
+        switch (type){
+            case "maps":    Layouts.maps_number++;
+                break;
+            case "menu":    Layouts.menu_number++;
+                break;
+            case "game":    Layouts.game_number++;
+                break;
+        }
     }
 
     public void add(Image image){

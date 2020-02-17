@@ -1,15 +1,17 @@
-package com.mulganov.project.tools;
+package com.mulganov.project.maps.create;
 
 import android.content.res.Resources;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
 import android.view.MotionEvent;
 
-import com.mulganov.project.DrawThread;
+import com.mulganov.project.maps.create.DrawThread;
 import com.mulganov.project.FullscreenActivity;
-import com.mulganov.project.MySurfaceView;
 import com.mulganov.project.R;
 import com.mulganov.project.layout.Layouts;
+import com.mulganov.project.tools.Image;
+import com.mulganov.project.tools.MatrixInfo;
+import com.mulganov.project.tools.Vector;
+import com.mulganov.project.tools.Vectors;
 
 public class createImage {
 
@@ -29,7 +31,7 @@ public class createImage {
     }
 
     public Image createFon(Resources resources){
-        fon = new Image(BitmapFactory.decodeResource(resources, R.drawable.main_fon_1), Layouts.MAIN) {
+        fon = new Image(BitmapFactory.decodeResource(resources, R.drawable.main_fon_1), Layouts.Maps_MAIN, "maps") {
             @Override
             public void onTouchEvent(MotionEvent event) {
                 // TODO Auto-generated method stub
@@ -43,41 +45,10 @@ public class createImage {
                     case MotionEvent.ACTION_DOWN:
                         long now = System.currentTimeMillis();
                         fon.sei.move = true;
-                        if (now - fon.sei.prevTime < 150){
-//
-//                            if (DrawThread.main_bar_image_act != null){
-//                                DrawThread.main_vector_event = new Vector(event.getX(), event.getY());
-//                                DrawThread.main_bar_image_act.onTouchEvent(event);
-//                            }else{
-//                                System.out.println("else zoom = 1");
-//
-//                                if (DrawThread.zoom_in.sei.zoom == 1 ){
-//                                    calibration(event.getX(), event.getY());
-//                                }else{
-//                                    DrawThread.zoom_in.sei.zoom = 1;
-//
-//                                    System.out.println(fon.sei.last.X);
-//
-//                                    fon.sei.x = fon.sei.last.X*4;
-//                                    fon.sei.y = fon.sei.last.Y*4;
-//
-//                                    fon.sei.zoom = 1;
-//
-//                                    DrawThread.zoom_in.setToucheEvent(true);
-//                                    DrawThread.zoom_in.paint.setAlpha(255);
-//
-//                                    DrawThread.zoom_out.setToucheEvent(true);
-//                                    DrawThread.zoom_out.paint.setAlpha(255);
-//                                }
 
+                        fon.sei.prevTime = now;
+                        fon.sei.oldMove = new Vector(event.getX(0), event.getY(0));
 
-//                                calibration(event.getX(), event.getY());
-
-//                            }
-                        }else{
-                            fon.sei.prevTime = now;
-                            fon.sei.oldMove = new Vector(event.getX(0), event.getY(0));
-                        }
 
                         break;
                     case MotionEvent.ACTION_UP:
@@ -99,7 +70,7 @@ public class createImage {
                             fon.sei.x -= move.X;
                             fon.sei.y -= move.Y;
 
-                            for (Image i: Layouts.Layout_MAIN2.get()){
+                            for (Image i: Layouts.Maps_Layout_MAIN2.get()){
                                 i.sei.x -= move.X;
                                 i.sei.y -= move.Y;
                             }
@@ -125,7 +96,7 @@ public class createImage {
                         fon.getVectorStartTranslate().X + fon.sei.x,
                         fon.getVectorStartTranslate().Y + fon.sei.y));
 
-                for (Image i : Layouts.Layout_MAIN2.get()){
+                for (Image i : Layouts.Maps_Layout_MAIN2.get()){
                     i.setMatrixInfo(new MatrixInfo(
                             i.getVectorStartScore().X * i.sei.zoom,
                             i.getVectorStartScore().Y * i.sei.zoom,
@@ -139,6 +110,7 @@ public class createImage {
         fon.setVectorStartTranslate(new Vector(fon.getMatrixInfo().getTranslate().X, fon.getMatrixInfo().getTranslate().Y));
         fon.setVectorStartScore(new Vector(fon.getMatrixInfo().getScale().X, fon.getMatrixInfo().getScale().Y));
 
+        fon.setDraw(true);
         fon.setToucheEvent(true);
 
 
@@ -150,7 +122,7 @@ public class createImage {
 
     public void createAddElements(Resources resources){
 
-        el1 = new Image(BitmapFactory.decodeResource(resources, R.drawable.add_el1), Layouts.ADD_BAR) {
+        el1 = new Image(BitmapFactory.decodeResource(resources, R.drawable.add_el1), Layouts.Maps_ADD_BAR, "maps") {
             @Override
             public void onTouchEvent(MotionEvent event) {
             }
@@ -172,7 +144,7 @@ public class createImage {
 
 
 
-        el2 = new Image(BitmapFactory.decodeResource(resources, R.drawable.add_el2), Layouts.ADD_BAR) {
+        el2 = new Image(BitmapFactory.decodeResource(resources, R.drawable.add_el2), Layouts.Maps_ADD_BAR, "maps") {
             @Override
             public void onTouchEvent(MotionEvent event) {
             }
@@ -195,7 +167,7 @@ public class createImage {
     }
 
     public static Image createMain2(Resources resources, Image image){
-        Image i = new Image(image.getBitmap(), Layouts.MAIN2) {
+        Image i = new Image(image.getBitmap(), Layouts.Maps_MAIN2, "maps") {
             @Override
             public void onTouchEvent(MotionEvent event) {
                 int pointerCount = event.getPointerCount();
@@ -247,6 +219,7 @@ public class createImage {
 
         };
 
+        i.setDraw(true);
         i.setMatrixInfo(new MatrixInfo(
                 image.getMatrixInfo().getScale().X, image.getMatrixInfo().getScale().Y,
                 image.getMatrixInfo().getTranslate().X, image.getMatrixInfo().getTranslate().Y));

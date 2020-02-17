@@ -5,25 +5,18 @@ import android.annotation.SuppressLint;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.Activity;
-import android.content.Context;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Matrix;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Display;
 import android.view.MotionEvent;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.View;
 
+import com.mulganov.project.layout.Layouts;
+import com.mulganov.project.maps.create.MySurfaceView;
+import com.mulganov.project.menu.MenuView;
 import com.mulganov.project.tools.Vector;
 
-public class FullscreenActivity extends AppCompatActivity implements View.OnTouchListener {
+public class FullscreenActivity extends AppCompatActivity{
 
     private static final boolean AUTO_HIDE = true;
 
@@ -33,7 +26,7 @@ public class FullscreenActivity extends AppCompatActivity implements View.OnTouc
 
     private static final int UI_ANIMATION_DELAY = 300;
     private final Handler mHideHandler = new Handler();
-    private View mContentView;
+    public View mContentView;
     private final Runnable mHidePart2Runnable = new Runnable() {
         @SuppressLint("InlinedApi")
         @Override
@@ -81,7 +74,12 @@ public class FullscreenActivity extends AppCompatActivity implements View.OnTouc
         delayedHide(100);
     }
 
-    private void hide() {
+    @Override
+    protected void onStart(){
+        super.onStart();
+        hide();
+    }
+    public void hide() {
         // Hide UI first
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -101,7 +99,8 @@ public class FullscreenActivity extends AppCompatActivity implements View.OnTouc
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         clas = this;
-        View content = new MySurfaceView(this);
+        Layouts.init();
+        View content = new MenuView( this);
 
         setContentView(content);
         mContentView = content;
@@ -116,14 +115,5 @@ public class FullscreenActivity extends AppCompatActivity implements View.OnTouc
         System.out.println(window.toString());
     }
 
-    @Override
-    public boolean onTouch(View v, MotionEvent event) {
-
-        if (v.getId() != mContentView.getId()) return false;
-
-       System.out.println(event.toString());
-
-        return false;
-    }
 }
 

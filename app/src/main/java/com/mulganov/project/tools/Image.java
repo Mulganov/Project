@@ -24,11 +24,19 @@ public abstract class Image {
     private MotionEvent motionEvent;
     public Paint paint = new Paint();
 
-    public Image(Bitmap bitmap, int layout){
+    public Image(Bitmap bitmap, int layout, String type){
         this.bitmap = bitmap;
         images.add(this);
         this.layout = layout;
-        Layouts.getLayout(layout).add(this);
+        switch (type){
+            case "maps":    Layouts.getLayoutMaps(layout).add(this);
+                break;
+            case "menu":    Layouts.getLayoutMenu(layout).add(this);
+                break;
+            case "game":    Layouts.getLayoutGame(layout).add(this);
+                break;
+        }
+
         draw = true;
     }
 

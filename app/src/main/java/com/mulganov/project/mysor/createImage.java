@@ -4,7 +4,6 @@ import android.content.res.Resources;
 import android.graphics.BitmapFactory;
 import android.view.MotionEvent;
 
-import com.mulganov.project.DrawThread;
 import com.mulganov.project.R;
 import com.mulganov.project.layout.Layouts;
 import com.mulganov.project.tools.Image;
@@ -17,7 +16,7 @@ public class createImage {
     public static Image fon;
 
     public Image createFon(Resources resources){
-        fon = new Image(BitmapFactory.decodeResource(resources, R.drawable.main_fon_1), Layouts.MAIN) {
+        fon = new Image(BitmapFactory.decodeResource(resources, R.drawable.main_fon_1), Layouts.Maps_MAIN, "maps") {
             @Override
             public void onTouchEvent(MotionEvent event) {
                 // TODO Auto-generated method stub
@@ -35,7 +34,7 @@ public class createImage {
                             fon.sei.x = 0;
                             fon.sei.y = 0;
                             fon.sei.zoom = 1;
-                            for (Image i: Layouts.Layout_MAIN2.get()){
+                            for (Image i: Layouts.Maps_Layout_MAIN2.get()){
                                 i.sei.x = 0;
                                 i.sei.y = 0;
                                 i.sei.zoom = 1;
@@ -67,7 +66,7 @@ public class createImage {
                             fon.sei.x -= move.X;
                             fon.sei.y -= move.Y;
 
-                            for (Image i: Layouts.Layout_MAIN2.get()){
+                            for (Image i: Layouts.Maps_Layout_MAIN2.get()){
                                 i.sei.x -= move.X;
                                 i.sei.y -= move.Y;
                             }
@@ -101,13 +100,13 @@ public class createImage {
 
                             if ((r1.X > 0 && r2.X < 0)){
                                 fon.sei.zoom += Math.abs(r1.X + r2.X) * 0.005f;
-                                for (Image i: Layouts.Layout_MAIN2.get()){
+                                for (Image i: Layouts.Maps_Layout_MAIN2.get()){
                                     i.sei.zoom += Math.abs(r1.X + r2.X) * 0.005f;
                                 }
                             }else
                             if ((r2.X > 0 && r1.X < 0)){
                                 fon.sei.zoom -= Math.abs(r1.X + r2.X) * 0.005f;
-                                for (Image i: Layouts.Layout_MAIN2.get()){
+                                for (Image i: Layouts.Maps_Layout_MAIN2.get()){
                                     i.sei.zoom -= Math.abs(r1.X + r2.X) * 0.005f;
                                 }
                             }
@@ -115,14 +114,14 @@ public class createImage {
                             if (fon.sei.zoom > 3.0f)   {
                                 fon.sei.zoom = 3;
 
-                                for (Image i: Layouts.Layout_MAIN2.get()){
+                                for (Image i: Layouts.Maps_Layout_MAIN2.get()){
                                     i.sei.zoom = 3;
                                 }
 
                             }
                             if (fon.sei.zoom < 0.5f)   {
                                 //fon.sei.zoom = 0.5f;
-                                for (Image i: Layouts.Layout_MAIN2.get()){
+                                for (Image i: Layouts.Maps_Layout_MAIN2.get()){
                                     //i.sei.zoom = 0.5f;
                                 }
                             }
@@ -152,7 +151,7 @@ public class createImage {
                         fon.getVectorStartTranslate().X + fon.sei.x,
                         fon.getVectorStartTranslate().Y + fon.sei.y));
 
-                for (Image i : Layouts.Layout_MAIN2.get()){
+                for (Image i : Layouts.Maps_Layout_MAIN2.get()){
                     i.setMatrixInfo(new MatrixInfo(
                             i.getVectorStartScore().X * i.sei.zoom,
                             i.getVectorStartScore().Y * i.sei.zoom,

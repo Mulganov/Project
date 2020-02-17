@@ -1,4 +1,4 @@
-package com.mulganov.project;
+package com.mulganov.project.maps.create;
 
 
 import android.content.Context;
@@ -6,12 +6,12 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import com.mulganov.project.FullscreenActivity;
 import com.mulganov.project.layout.Layouts;
 import com.mulganov.project.tools.Image;
 import com.mulganov.project.tools.MatrixInfo;
 import com.mulganov.project.tools.Vector;
 import com.mulganov.project.tools.Vectors;
-import com.mulganov.project.tools.createImage;
 
 public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback {
     private DrawThread drawThread;
@@ -72,7 +72,7 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
 
                     Vector move = Vectors.minus(move_add_bar_oldMove, newMove);
 
-                    for (Image i: Layouts.Layout_ADD_BAR.get()){
+                    for (Image i: Layouts.Maps_Layout_ADD_BAR.get()){
                         MatrixInfo mi = new MatrixInfo(
                                 i.getMatrixInfo().getScale().X,i.getMatrixInfo().getScale().Y,
                                 i.getMatrixInfo().getTranslate().X - move.X, i.getMatrixInfo().getTranslate().Y
@@ -92,13 +92,13 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
         }else
         {
             if (event.getAction() == MotionEvent.ACTION_DOWN){
-                for (Image i: Layouts.Layout_ADD_BAR.get()){
+                for (Image i: Layouts.Maps_Layout_ADD_BAR.get()){
                     i.setDraw(false);
                 }
-                for (Image i: Layouts.Layout_MAIN.get()){
+                for (Image i: Layouts.Maps_Layout_MAIN.get()){
                     i.setToucheEvent(true);
                 }
-                for (Image i: Layouts.Layout_MAIN2.get()){
+                for (Image i: Layouts.Maps_Layout_MAIN2.get()){
                     i.setToucheEvent(true);
                 }
                 DrawThread.mode = "";
@@ -121,8 +121,8 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
                 float ex = event.getX();
                 float ey = event.getY();
 
-                for (int id = Layouts.number - 1; id >= 0; id--){
-                    for (Image i: Layouts.getLayout(id).get()){
+                for (int id = Layouts.maps_number - 1; id >= 0; id--){
+                    for (Image i: Layouts.getLayoutMaps(id).get()){
                         if (i.isToucheEvent() && i.isDraw()){
                             if ( i.getVectorBegin().X <= ex && ex <= i.getVectorEnd().X ){
                                 if ( i.getVectorBegin().Y <= ey && ey <= i.getVectorEnd().Y ){
@@ -143,8 +143,8 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
                 ex = event.getX();
                 ey = event.getY();
 
-                for (int id = Layouts.number - 1; id >= 0; id--){
-                    for (Image i: Layouts.getLayout(id).get()){
+                for (int id = Layouts.maps_number - 1; id >= 0; id--){
+                    for (Image i: Layouts.getLayoutMaps(id).get()){
                         if (i.isToucheEvent() && i.isDraw()){
                             if ( i.getVectorBegin().X <= ex && ex <= i.getVectorEnd().X ){
                                 if ( i.getVectorBegin().Y <= ey && ey <= i.getVectorEnd().Y ){
@@ -163,8 +163,8 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
                 ex = event.getX();
                 ey = event.getY();
 
-                for (int id = Layouts.number - 1; id >= 0; id--){
-                    for (Image i: Layouts.getLayout(id).get()){
+                for (int id = Layouts.maps_number - 1; id >= 0; id--){
+                    for (Image i: Layouts.getLayoutMaps(id).get()){
                         if (i.isToucheEvent() && i.isDraw()){
                             if ( i.getVectorBegin().X <= ex && ex <= i.getVectorEnd().X ){
                                 if ( i.getVectorBegin().Y <= ey && ey <= i.getVectorEnd().Y ){
@@ -182,8 +182,8 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
                 ex = event.getX();
                 ey = event.getY();
 
-                for (int id = Layouts.number - 1; id >= 0; id--){
-                    for (Image i: Layouts.getLayout(id).get()){
+                for (int id = Layouts.maps_number - 1; id >= 0; id--){
+                    for (Image i: Layouts.getLayoutMaps(id).get()){
                         if (i.isToucheEvent() && i.isDraw()){
                             if ( i.getVectorBegin().X <= ex && ex <= i.getVectorEnd().X ){
                                 if ( i.getVectorBegin().Y <= ey && ey <= i.getVectorEnd().Y ){
@@ -208,8 +208,8 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
                 ex = event.getX();
                 ey = event.getY();
 
-                for (int id = Layouts.number - 1; id >= 0; id--){
-                    for (Image i: Layouts.getLayout(id).get()){
+                for (int id = Layouts.maps_number - 1; id >= 0; id--){
+                    for (Image i: Layouts.getLayoutMaps(id).get()){
                         if (i.isToucheEvent() && i.isDraw()){
                             if ( i.getVectorBegin().X <= ex && ex <= i.getVectorEnd().X ){
                                 if ( i.getVectorBegin().Y <= ey && ey <= i.getVectorEnd().Y ){

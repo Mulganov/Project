@@ -1,29 +1,26 @@
-package com.mulganov.project;
+package com.mulganov.project.maps.create;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.os.Handler;
-import android.os.Message;
-import android.text.Layout;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
-import android.widget.Button;
+import android.view.View;
 
+import com.mulganov.project.FullscreenActivity;
+import com.mulganov.project.R;
+import com.mulganov.project.layout.Layout;
 import com.mulganov.project.layout.Layouts;
+import com.mulganov.project.menu.MenuView;
 import com.mulganov.project.tools.Image;
 import com.mulganov.project.tools.MatrixInfo;
 import com.mulganov.project.tools.Vector;
-import com.mulganov.project.tools.Vectors;
-import com.mulganov.project.tools.createImage;
 
 public class DrawThread extends Thread{
     private boolean runFlag = false;
@@ -42,7 +39,7 @@ public class DrawThread extends Thread{
     public static Image add_element;
     public static Vector main_vector_event;
 
-    public static boolean menu;
+    public static boolean menuB;
 
     public static String mode = "";
 
@@ -50,7 +47,7 @@ public class DrawThread extends Thread{
 
     private Handler mHandler;
 
-    public static Image zoom_in, zoom_out, edit, del, move, Import, export;
+    public static Image zoom_in, zoom_out, edit, del, move, Import, export, menu;
 
     public DrawThread(SurfaceHolder surfaceHolder, final Resources resources){
         this.surfaceHolder = surfaceHolder;
@@ -58,6 +55,7 @@ public class DrawThread extends Thread{
         window = new Vector();
 
         Layouts.init();
+
 
         final createImage create = new createImage();
 
@@ -69,7 +67,7 @@ public class DrawThread extends Thread{
         float zy;
 
 
-        Image menu = new Image(BitmapFactory.decodeResource(resources, R.drawable.main_bar_menu), Layouts.MAIN_BAR) {
+        menu = new Image(BitmapFactory.decodeResource(resources, R.drawable.main_bar_menu), Layouts.Maps_MAIN_BAR, "maps") {
             @Override
             public void onTouchEvent(MotionEvent event) {
 
@@ -82,19 +80,36 @@ public class DrawThread extends Thread{
         menu.setOnClick(new Runnable() {
             @Override
             public void run() {
-                for (int id = Layouts.number - 1; id >= 0; id--){
-                    for (Image i: Layouts.getLayout(id).get()){
-                       i.setDraw(false);
+                if (!menuB){
+                    for (int id = Layouts.maps_number - 1; id >= 0; id--){
+                        for (Image i: Layouts.getLayoutMaps(id).get()){
+                            i.setDraw(false);
+                        }
                     }
-                }
 
-                DrawThread.menu = true;
-                Import.setDraw(true);
-                export.setDraw(true);
+                    DrawThread.menuB = true;
+                    Import.setDraw(true);
+                    export.setDraw(true);
+                    menu.setDraw(true);
+                }else{
+                    for (int id = Layouts.maps_number - 1; id >= 0; id--){
+                        for (Image i: Layouts.getLayoutMaps(id).get()){
+                            i.setDraw(true);
+                        }
+                    }
+
+                    for (Image i: Layouts.Maps_Layout_ADD_BAR.get()){
+                        i.setDraw(false);
+                    }
+
+                    DrawThread.menuB = false;
+                    Import.setDraw(false);
+                    export.setDraw(false);
+                }
             }
         });
 
-        Image add = new Image(BitmapFactory.decodeResource(resources, R.drawable.main_bar_add), Layouts.MAIN_BAR) {
+        Image add = new Image(BitmapFactory.decodeResource(resources, R.drawable.main_bar_add), Layouts.Maps_MAIN_BAR, "maps") {
             @Override
             public void onTouchEvent(MotionEvent event) {
 
@@ -108,14 +123,14 @@ public class DrawThread extends Thread{
             public void run() {
                 if (mode.contains("ADD_BAR")){
                     mode = "";
-                    for (Image i: Layouts.Layout_ADD_BAR.get()){
+                    for (Image i: Layouts.Maps_Layout_ADD_BAR.get()){
                         i.setDraw(false);
                     }
 
-                    for (Image i: Layouts.Layout_MAIN.get()){
+                    for (Image i: Layouts.Maps_Layout_MAIN.get()){
                         i.setToucheEvent(true);
                     }
-                    for (Image i: Layouts.Layout_MAIN2.get()){
+                    for (Image i: Layouts.Maps_Layout_MAIN2.get()){
                         i.setToucheEvent(true);
                     }
 
@@ -131,16 +146,16 @@ public class DrawThread extends Thread{
 
                     float x = 0, y = FullscreenActivity.window.Y / 2;
 
-                    for (Image i: Layouts.Layout_ADD_BAR.get()){
+                    for (Image i: Layouts.Maps_Layout_ADD_BAR.get()){
                         i.setMatrixInfo(new MatrixInfo(i.getMatrixInfo().getScale().X, i.getMatrixInfo().getScale().Y, x, y));
                         x += i.getSize().X ;
                         i.setDraw(true);
                     }
 
-                    for (Image i: Layouts.Layout_MAIN.get()){
+                    for (Image i: Layouts.Maps_Layout_MAIN.get()){
                         i.setToucheEvent(false);
                     }
-                    for (Image i: Layouts.Layout_MAIN2.get()){
+                    for (Image i: Layouts.Maps_Layout_MAIN2.get()){
                         i.setToucheEvent(false);
                     }
                 }
@@ -148,89 +163,7 @@ public class DrawThread extends Thread{
             }
         });
 
-//        zoom_in = new Image(BitmapFactory.decodeResource(resources, R.drawable.main_bar_zoom_in), Layouts.MAIN_BAR) {
-//            @Override
-//            public void onTouchEvent(MotionEvent event) {
-//
-//                if (zoom_in.sei.zoom == 1){
-//                    zoom_in.sei.zoom = 2;
-//
-//                    System.out.println("plus zoom = 2");
-//
-//                    createImage.fon.sei.zoom = zoom_in.sei.zoom;
-//
-//                    createImage.calibration(event.getX() * 2 , event.getY() * 2);
-//                }
-//
-//                if (zoom_in.sei.zoom == 2){
-//                    DrawThread.main_bar_image_act = null;
-//                    zoom_in.setToucheEvent(false);
-//                    zoom_in.paint.setAlpha(40);
-//                }
-//            }
-//        };
-//
-//        zx = BitmapFactory.decodeResource(resources, R.drawable.main_bar_zoom_in).getWidth() / 2.75f / 36;
-//        zy = BitmapFactory.decodeResource(resources, R.drawable.main_bar_zoom_in).getHeight() / 2.75f / 36;
-//        zoom_in.setMatrixInfo(new MatrixInfo(zx/100, zy/100, FullscreenActivity.window.X - BitmapFactory.decodeResource(resources, R.drawable.main_bar_zoom_in).getWidth() / 2.75f * zx / 100, 220));
-//        zoom_in.setOnClick(new Runnable() {
-//            @Override
-//            public void run() {
-//                if (zoom_in.sei.zoom == 0.5f){
-//                    zoom_in.setToucheEvent(false);
-//                    zoom_in.paint.setAlpha(40);
-//                }else
-//                if (main_bar_image_act == zoom_in){
-//                    main_bar_image_act = null;
-//                }else{
-//                    main_bar_image_act = zoom_in;
-//                    main_bar_act_b = new Vector(zoom_in.getMatrixInfo().getTranslate().X, zoom_in.getMatrixInfo().getTranslate().Y);
-//                    main_bar_act_e = new Vector(zoom_in.getMatrixInfo().getTranslate().X + zoom_in.getSize().X, zoom_in.getMatrixInfo().getTranslate().Y + zoom_in.getSize().Y);
-//                }
-//
-//            }
-//        });
-//
-//        zoom_out = new Image(BitmapFactory.decodeResource(resources, R.drawable.main_bar_zoom_out), Layouts.MAIN_BAR) {
-//            @Override
-//            public void onTouchEvent(MotionEvent event) {
-//
-//                if (zoom_in.sei.zoom == 1){
-//                    zoom_in.sei.zoom = 0.5f;
-//
-//                    System.out.println("minus zoom = 0.5");
-//
-//                    createImage.fon.sei.zoom = zoom_in.sei.zoom;
-//
-//                    createImage.calibration(event.getX() * 0.50f , event.getY() * 0.5f);
-//                }
-//
-//                if (zoom_in.sei.zoom == 0.5f){
-//                    DrawThread.main_bar_image_act = null;
-//                    zoom_out.setToucheEvent(false);
-//                    zoom_out.paint.setAlpha(40);
-//                }
-//            }
-//        };
-//        zoom_out.sei.zoom = 0;
-//        zx = BitmapFactory.decodeResource(resources, R.drawable.main_bar_zoom_out).getWidth() / 2.75f / 36;
-//        zy = BitmapFactory.decodeResource(resources, R.drawable.main_bar_zoom_out).getHeight() / 2.75f / 36;
-//        zoom_out.setMatrixInfo(new MatrixInfo(zx/100, zy/100, FullscreenActivity.window.X - BitmapFactory.decodeResource(resources, R.drawable.main_bar_zoom_out).getWidth() / 2.75f * zx / 100, 320));
-//        zoom_out.setOnClick(new Runnable() {
-//            @Override
-//            public void run() {
-//
-//                if (main_bar_image_act == zoom_out){
-//                    main_bar_image_act = null;
-//                }else {
-//                    main_bar_image_act = zoom_out;
-//                    main_bar_act_b = new Vector(zoom_out.getMatrixInfo().getTranslate().X, zoom_out.getMatrixInfo().getTranslate().Y);
-//                    main_bar_act_e = new Vector(zoom_out.getMatrixInfo().getTranslate().X + zoom_out.getSize().X, zoom_out.getMatrixInfo().getTranslate().Y + zoom_out.getSize().Y);
-//                }
-//            }
-//        });
-
-        edit = new Image(BitmapFactory.decodeResource(resources, R.drawable.main_bar_edit), Layouts.MAIN_BAR) {
+        edit = new Image(BitmapFactory.decodeResource(resources, R.drawable.main_bar_edit), Layouts.Maps_MAIN_BAR, "maps") {
             @Override
             public void onTouchEvent(MotionEvent event) {
                 int action = event.getAction();
@@ -240,7 +173,7 @@ public class DrawThread extends Thread{
                         float ex = event.getX();
                         float ey = event.getY();
 
-                            for (Image i: Layouts.Layout_MAIN2.get()){
+                            for (Image i: Layouts.Maps_Layout_MAIN2.get()){
                                 if (i.isToucheEvent() && i.isDraw()){
                                     if ( i.getVectorBegin().X <= ex && ex <= i.getVectorEnd().X ){
                                         if ( i.getVectorBegin().Y <= ey && ey <= i.getVectorEnd().Y ){
@@ -268,7 +201,7 @@ public class DrawThread extends Thread{
                 }
             }
         };
-
+        edit.setDraw(true);
         zx = BitmapFactory.decodeResource(resources, R.drawable.main_bar_edit).getWidth() / 2.75f / 36;
         zy = BitmapFactory.decodeResource(resources, R.drawable.main_bar_edit).getHeight() / 2.75f / 36;
         edit.setMatrixInfo(new MatrixInfo(zx/100, zy/100, FullscreenActivity.window.X - BitmapFactory.decodeResource(resources, R.drawable.main_bar_edit).getWidth() / 2.75f * zx / 100, 220));
@@ -290,7 +223,7 @@ public class DrawThread extends Thread{
                     main_bar_act_b = new Vector(edit.getMatrixInfo().getTranslate().X, edit.getMatrixInfo().getTranslate().Y);
                     main_bar_act_e = new Vector(edit.getMatrixInfo().getTranslate().X + edit.getSize().X, edit.getMatrixInfo().getTranslate().Y + edit.getSize().Y);
 
-                    for (Image i: Layouts.Layout_MAIN2.get()){
+                    for (Image i: Layouts.Maps_Layout_MAIN2.get()){
                         i.setToucheEvent(true);
                     }
                 }
@@ -299,12 +232,13 @@ public class DrawThread extends Thread{
         });
 
 
-        move = new Image(BitmapFactory.decodeResource(resources, R.drawable.main_bar_move), Layouts.MAIN_BAR) {
+        move = new Image(BitmapFactory.decodeResource(resources, R.drawable.main_bar_move), Layouts.Maps_MAIN_BAR, "maps") {
             @Override
             public void onTouchEvent(MotionEvent event) {
             }
         };
 
+        move.setDraw(true);
         zx = BitmapFactory.decodeResource(resources, R.drawable.main_bar_move).getWidth() / 2.75f / 36;
         zy = BitmapFactory.decodeResource(resources, R.drawable.main_bar_move).getHeight() / 2.75f / 36;
         move.setMatrixInfo(new MatrixInfo(zx/100, zy/100, FullscreenActivity.window.X - BitmapFactory.decodeResource(resources, R.drawable.main_bar_move).getWidth() / 2.75f * zx / 100, 330));
@@ -326,19 +260,20 @@ public class DrawThread extends Thread{
         });
         move.paint.setAlpha(40);
 
-        del = new Image(BitmapFactory.decodeResource(resources, R.drawable.main_bar_del), Layouts.MAIN_BAR) {
+        del = new Image(BitmapFactory.decodeResource(resources, R.drawable.main_bar_del), Layouts.Maps_MAIN_BAR, "maps") {
             @Override
             public void onTouchEvent(MotionEvent event) {
             }
         };
 
+        del.setDraw(true);
         zx = BitmapFactory.decodeResource(resources, R.drawable.main_bar_del).getWidth() / 2.75f / 36;
         zy = BitmapFactory.decodeResource(resources, R.drawable.main_bar_del).getHeight() / 2.75f / 36;
         del.setMatrixInfo(new MatrixInfo(zx/100, zy/100, FullscreenActivity.window.X - BitmapFactory.decodeResource(resources, R.drawable.main_bar_del).getWidth() / 2.75f * zx / 100, 480));
         del.setOnClick(new Runnable() {
             @Override
             public void run() {
-                Layouts.Layout_MAIN2.del(main2_image_act);
+                Layouts.Maps_Layout_MAIN2.del(main2_image_act);
                 del.paint.setAlpha(40);
                 main2_image_act = null;
 
@@ -347,7 +282,8 @@ public class DrawThread extends Thread{
         });
         del.paint.setAlpha(40);
 
-        Import = new Image(BitmapFactory.decodeResource(resources, R.drawable.menu_import), Layouts.MENU_BAR) {
+
+        Import = new Image(BitmapFactory.decodeResource(resources, R.drawable.menu_import), Layouts.Maps_MENU_BAR, "maps") {
             @Override
             public void onTouchEvent(MotionEvent event) {
             }
@@ -364,7 +300,7 @@ public class DrawThread extends Thread{
         });
         Import.setDraw(false);
 
-        export = new Image(BitmapFactory.decodeResource(resources, R.drawable.menu_export), Layouts.MENU_BAR) {
+        export = new Image(BitmapFactory.decodeResource(resources, R.drawable.menu_export), Layouts.Maps_MENU_BAR, "maps") {
             @Override
             public void onTouchEvent(MotionEvent event) {
             }
@@ -388,7 +324,7 @@ public class DrawThread extends Thread{
                 text += "[0] id: " + "[id]\n";
                 text += "[1] id: " + "[id]\n";
 
-                for (Image i: Layouts.Layout_MAIN2.get()){
+                for (Image i: Layouts.Maps_Layout_MAIN2.get()){
                     String n = "";
                     if (i.getBitmap().equals(createImage.el1.getBitmap())){
                         n = "0";
@@ -407,12 +343,20 @@ public class DrawThread extends Thread{
 
                 copy = true;
 
+                View v = new MenuView(FullscreenActivity.clas);
+                FullscreenActivity.clas.mContentView = v;
+                FullscreenActivity.clas.setContentView(v);
+                FullscreenActivity.clas.hide();
+
+
             }
         });
         export.setDraw(false);
 
         // сохраняем текущее время
         prevTime = System.currentTimeMillis();
+
+        menuB = false;
 
     }
 
@@ -442,9 +386,10 @@ public class DrawThread extends Thread{
 
                         Paint p = new Paint();
 
-                        if (menu){
+                        if (menuB){
                             Import.draw(canvas);
                             export.draw(canvas);
+                            menu.draw(canvas);
 
                             if (copy){
                                 p.setTextSize(46);
@@ -452,8 +397,8 @@ public class DrawThread extends Thread{
                             }
 
                         }else{
-                            for (int id = 0; id < Layouts.number; id++){
-                                for (Image i: Layouts.getLayout(id).get()){
+                            for (int id = 0; id < Layouts.maps_number; id++){
+                                for (Image i: Layouts.getLayoutMaps(id).get()){
                                     if (i.isDraw()){
                                         i.draw(canvas);
                                     }
