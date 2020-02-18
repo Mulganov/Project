@@ -47,7 +47,7 @@ public class DrawThread extends Thread{
 
     private Handler mHandler;
 
-    public static Image zoom_in, zoom_out, edit, del, move, Import, export, menu;
+    public static Image zoom_in, zoom_out, edit, del, move, Import, export, menu, replaceFon, add;
 
     public DrawThread(SurfaceHolder surfaceHolder, final Resources resources){
         this.surfaceHolder = surfaceHolder;
@@ -60,23 +60,21 @@ public class DrawThread extends Thread{
         final createImage create = new createImage();
 
         create.createFon(resources);
-        create.createAddElements(resources);
-
 
         float zx;
         float zy;
 
 
-        menu = new Image(BitmapFactory.decodeResource(resources, R.drawable.main_bar_menu), Layouts.Maps_MAIN_BAR, "maps") {
+        menu = new Image(BitmapFactory.decodeResource(resources, R.drawable.maps_main_bar_menu), Layouts.Maps_MAIN_BAR, "maps") {
             @Override
             public void onTouchEvent(MotionEvent event) {
 
             }
         };
 
-        zx = BitmapFactory.decodeResource(resources, R.drawable.main_bar_menu).getWidth() / 2.75f / 36;
-        zy = BitmapFactory.decodeResource(resources, R.drawable.main_bar_menu).getHeight() / 2.75f / 36;
-        menu.setMatrixInfo(new MatrixInfo(zx, zy, FullscreenActivity.window.X - BitmapFactory.decodeResource(resources, R.drawable.main_bar_menu).getWidth() / 2.75f * zx, 0));
+        zx = BitmapFactory.decodeResource(resources, R.drawable.maps_main_bar_menu).getWidth() / 2.75f / 36;
+        zy = BitmapFactory.decodeResource(resources, R.drawable.maps_main_bar_menu).getHeight() / 2.75f / 36;
+        menu.setMatrixInfo(new MatrixInfo(zx, zy, FullscreenActivity.window.X - BitmapFactory.decodeResource(resources, R.drawable.maps_main_bar_menu).getWidth() / 2.75f * zx, 0));
         menu.setOnClick(new Runnable() {
             @Override
             public void run() {
@@ -109,19 +107,21 @@ public class DrawThread extends Thread{
             }
         });
 
-        Image add = new Image(BitmapFactory.decodeResource(resources, R.drawable.main_bar_add), Layouts.Maps_MAIN_BAR, "maps") {
+        add = new Image(BitmapFactory.decodeResource(resources, R.drawable.maps_main_bar_add), Layouts.Maps_MAIN_BAR, "maps") {
             @Override
             public void onTouchEvent(MotionEvent event) {
 
             }
         };
-        zx = BitmapFactory.decodeResource(resources, R.drawable.main_bar_add).getWidth() / 2.75f / 36;
-        zy = BitmapFactory.decodeResource(resources, R.drawable.main_bar_add).getHeight() / 2.75f / 36;
-        add.setMatrixInfo(new MatrixInfo(zx/100, zy/100, FullscreenActivity.window.X - BitmapFactory.decodeResource(resources, R.drawable.main_bar_add).getWidth() / 2.75f * zx / 100, 100));
+        zx = BitmapFactory.decodeResource(resources, R.drawable.maps_main_bar_add).getWidth() / 2.75f / 36;
+        zy = BitmapFactory.decodeResource(resources, R.drawable.maps_main_bar_add).getHeight() / 2.75f / 36;
+        add.setMatrixInfo(new MatrixInfo(zx/100, zy/100, FullscreenActivity.window.X - BitmapFactory.decodeResource(resources, R.drawable.maps_main_bar_add).getWidth() / 2.75f * zx / 100, 100));
         add.setOnClick(new Runnable() {
             @Override
             public void run() {
                 if (mode.contains("ADD_BAR")){
+                    replaceFon.setToucheEvent(true);
+                    replaceFon.paint.setAlpha(255);
                     mode = "";
                     for (Image i: Layouts.Maps_Layout_ADD_BAR.get()){
                         i.setDraw(false);
@@ -142,7 +142,11 @@ public class DrawThread extends Thread{
 
 
                 }else{
+                    replaceFon.setToucheEvent(false);
+                    replaceFon.paint.setAlpha(40);
                     mode = "ADD_BAR";
+
+                    create.createAddElements(resources);
 
                     float x = 0, y = FullscreenActivity.window.Y / 2;
 
@@ -163,7 +167,7 @@ public class DrawThread extends Thread{
             }
         });
 
-        edit = new Image(BitmapFactory.decodeResource(resources, R.drawable.main_bar_edit), Layouts.Maps_MAIN_BAR, "maps") {
+        edit = new Image(BitmapFactory.decodeResource(resources, R.drawable.maps_main_bar_edit), Layouts.Maps_MAIN_BAR, "maps") {
             @Override
             public void onTouchEvent(MotionEvent event) {
                 int action = event.getAction();
@@ -202,9 +206,9 @@ public class DrawThread extends Thread{
             }
         };
         edit.setDraw(true);
-        zx = BitmapFactory.decodeResource(resources, R.drawable.main_bar_edit).getWidth() / 2.75f / 36;
-        zy = BitmapFactory.decodeResource(resources, R.drawable.main_bar_edit).getHeight() / 2.75f / 36;
-        edit.setMatrixInfo(new MatrixInfo(zx/100, zy/100, FullscreenActivity.window.X - BitmapFactory.decodeResource(resources, R.drawable.main_bar_edit).getWidth() / 2.75f * zx / 100, 220));
+        zx = BitmapFactory.decodeResource(resources, R.drawable.maps_main_bar_edit).getWidth() / 2.75f / 36;
+        zy = BitmapFactory.decodeResource(resources, R.drawable.maps_main_bar_edit).getHeight() / 2.75f / 36;
+        edit.setMatrixInfo(new MatrixInfo(zx/100, zy/100, FullscreenActivity.window.X - BitmapFactory.decodeResource(resources, R.drawable.maps_main_bar_edit).getWidth() / 2.75f * zx / 100, 220));
         edit.setOnClick(new Runnable() {
             @Override
             public void run() {
@@ -232,16 +236,16 @@ public class DrawThread extends Thread{
         });
 
 
-        move = new Image(BitmapFactory.decodeResource(resources, R.drawable.main_bar_move), Layouts.Maps_MAIN_BAR, "maps") {
+        move = new Image(BitmapFactory.decodeResource(resources, R.drawable.maps_main_bar_move), Layouts.Maps_MAIN_BAR, "maps") {
             @Override
             public void onTouchEvent(MotionEvent event) {
             }
         };
 
         move.setDraw(true);
-        zx = BitmapFactory.decodeResource(resources, R.drawable.main_bar_move).getWidth() / 2.75f / 36;
-        zy = BitmapFactory.decodeResource(resources, R.drawable.main_bar_move).getHeight() / 2.75f / 36;
-        move.setMatrixInfo(new MatrixInfo(zx/100, zy/100, FullscreenActivity.window.X - BitmapFactory.decodeResource(resources, R.drawable.main_bar_move).getWidth() / 2.75f * zx / 100, 330));
+        zx = BitmapFactory.decodeResource(resources, R.drawable.maps_main_bar_move).getWidth() / 2.75f / 36;
+        zy = BitmapFactory.decodeResource(resources, R.drawable.maps_main_bar_move).getHeight() / 2.75f / 36;
+        move.setMatrixInfo(new MatrixInfo(zx/100, zy/100, FullscreenActivity.window.X - BitmapFactory.decodeResource(resources, R.drawable.maps_main_bar_move).getWidth() / 2.75f * zx / 100, 330));
         move.setOnClick(new Runnable() {
             @Override
             public void run() {
@@ -260,16 +264,16 @@ public class DrawThread extends Thread{
         });
         move.paint.setAlpha(40);
 
-        del = new Image(BitmapFactory.decodeResource(resources, R.drawable.main_bar_del), Layouts.Maps_MAIN_BAR, "maps") {
+        del = new Image(BitmapFactory.decodeResource(resources, R.drawable.maps_main_bar_del), Layouts.Maps_MAIN_BAR, "maps") {
             @Override
             public void onTouchEvent(MotionEvent event) {
             }
         };
 
         del.setDraw(true);
-        zx = BitmapFactory.decodeResource(resources, R.drawable.main_bar_del).getWidth() / 2.75f / 36;
-        zy = BitmapFactory.decodeResource(resources, R.drawable.main_bar_del).getHeight() / 2.75f / 36;
-        del.setMatrixInfo(new MatrixInfo(zx/100, zy/100, FullscreenActivity.window.X - BitmapFactory.decodeResource(resources, R.drawable.main_bar_del).getWidth() / 2.75f * zx / 100, 480));
+        zx = BitmapFactory.decodeResource(resources, R.drawable.maps_main_bar_del).getWidth() / 2.75f / 36;
+        zy = BitmapFactory.decodeResource(resources, R.drawable.maps_main_bar_del).getHeight() / 2.75f / 36;
+        del.setMatrixInfo(new MatrixInfo(zx/100, zy/100, FullscreenActivity.window.X - BitmapFactory.decodeResource(resources, R.drawable.maps_main_bar_del).getWidth() / 2.75f * zx / 100, 480));
         del.setOnClick(new Runnable() {
             @Override
             public void run() {
@@ -282,16 +286,77 @@ public class DrawThread extends Thread{
         });
         del.paint.setAlpha(40);
 
-
-        Import = new Image(BitmapFactory.decodeResource(resources, R.drawable.menu_import), Layouts.Maps_MENU_BAR, "maps") {
+        replaceFon = new Image(BitmapFactory.decodeResource(resources, R.drawable.maps_set_fon), Layouts.Maps_MAIN_BAR, "maps") {
             @Override
             public void onTouchEvent(MotionEvent event) {
             }
         };
 
-        zx = BitmapFactory.decodeResource(resources, R.drawable.menu_import).getWidth() / 2.75f / 100;
-        zy = BitmapFactory.decodeResource(resources, R.drawable.menu_import).getHeight() / 2.75f / 100;
-        Import.setMatrixInfo(new MatrixInfo(zx/100, zy/100, FullscreenActivity.window.X / 2 - BitmapFactory.decodeResource(resources, R.drawable.menu_import).getWidth() / 2.75f * zx / 100 / 2 - 400, 400));
+        replaceFon.setDraw(true);
+        zx = BitmapFactory.decodeResource(resources, R.drawable.maps_set_fon).getWidth() / 2.75f / 36;
+        zy = BitmapFactory.decodeResource(resources, R.drawable.maps_set_fon).getHeight() / 2.75f / 36;
+        replaceFon.setMatrixInfo(new MatrixInfo(zx/100, zy/100, FullscreenActivity.window.X - BitmapFactory.decodeResource(resources, R.drawable.maps_set_fon).getWidth() / 2.75f * zx / 100, 600));
+        replaceFon.setOnClick(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println(mode);
+                if (mode.contains("ADD_BAR")){
+                    add.setToucheEvent(true);
+                    add.paint.setAlpha(255);
+                    mode = "";
+                    for (Image i: Layouts.Maps_Layout_ADD_BAR.get()){
+                        i.setDraw(false);
+                    }
+
+                    for (Image i: Layouts.Maps_Layout_MAIN.get()){
+                        i.setToucheEvent(true);
+                    }
+                    for (Image i: Layouts.Maps_Layout_MAIN2.get()){
+                        i.setToucheEvent(true);
+                    }
+
+                    if (add_element == null){
+                        return;
+                    }
+
+                    createImage.fon.setBitmap(add_element.getBitmap());
+
+
+                }else{
+                    add.setToucheEvent(false);
+                    add.paint.setAlpha(40);
+                    mode = "ADD_BAR_FON";
+
+                    create.createAddElements(resources);
+
+                    float x = 0, y = FullscreenActivity.window.Y / 2;
+
+                    for (Image i: Layouts.Maps_Layout_ADD_BAR.get()){
+                        i.setMatrixInfo(new MatrixInfo(i.getMatrixInfo().getScale().X, i.getMatrixInfo().getScale().Y, x, y));
+                        x += i.getSize().X ;
+                        i.setDraw(true);
+                    }
+
+                    for (Image i: Layouts.Maps_Layout_MAIN.get()){
+                        i.setToucheEvent(false);
+                    }
+                    for (Image i: Layouts.Maps_Layout_MAIN2.get()){
+                        i.setToucheEvent(false);
+                    }
+                }
+            }
+        });
+
+
+        Import = new Image(BitmapFactory.decodeResource(resources, R.drawable.maps_menu_import), Layouts.Maps_MENU_BAR, "maps") {
+            @Override
+            public void onTouchEvent(MotionEvent event) {
+            }
+        };
+
+        zx = BitmapFactory.decodeResource(resources, R.drawable.maps_menu_import).getWidth() / 2.75f / 100;
+        zy = BitmapFactory.decodeResource(resources, R.drawable.maps_menu_import).getHeight() / 2.75f / 100;
+        Import.setMatrixInfo(new MatrixInfo(zx/100, zy/100, FullscreenActivity.window.X / 2 - BitmapFactory.decodeResource(resources, R.drawable.maps_menu_import).getWidth() / 2.75f * zx / 100 / 2 - 400, 400));
         Import.setOnClick(new Runnable() {
             @Override
             public void run() {
@@ -300,15 +365,15 @@ public class DrawThread extends Thread{
         });
         Import.setDraw(false);
 
-        export = new Image(BitmapFactory.decodeResource(resources, R.drawable.menu_export), Layouts.Maps_MENU_BAR, "maps") {
+        export = new Image(BitmapFactory.decodeResource(resources, R.drawable.maps_menu_export), Layouts.Maps_MENU_BAR, "maps") {
             @Override
             public void onTouchEvent(MotionEvent event) {
             }
         };
 
-        zx = BitmapFactory.decodeResource(resources, R.drawable.menu_export).getWidth() / 2.75f / 5;
-        zy = BitmapFactory.decodeResource(resources, R.drawable.menu_export).getHeight() / 2.75f / 5;
-        export.setMatrixInfo(new MatrixInfo(zx/100, zy/100, FullscreenActivity.window.X / 2 - BitmapFactory.decodeResource(resources, R.drawable.menu_export).getWidth() / 2.75f * zx / 100 / 2 + 400, 320));
+        zx = BitmapFactory.decodeResource(resources, R.drawable.maps_menu_export).getWidth() / 2.75f / 5;
+        zy = BitmapFactory.decodeResource(resources, R.drawable.maps_menu_export).getHeight() / 2.75f / 5;
+        export.setMatrixInfo(new MatrixInfo(zx/100, zy/100, FullscreenActivity.window.X / 2 - BitmapFactory.decodeResource(resources, R.drawable.maps_menu_export).getWidth() / 2.75f * zx / 100 / 2 + 400, 320));
         export.setOnClick(new Runnable() {
             @Override
             public void run() {
@@ -324,18 +389,18 @@ public class DrawThread extends Thread{
                 text += "[0] id: " + "[id]\n";
                 text += "[1] id: " + "[id]\n";
 
-                for (Image i: Layouts.Maps_Layout_MAIN2.get()){
-                    String n = "";
-                    if (i.getBitmap().equals(createImage.el1.getBitmap())){
-                        n = "0";
-                    }else
-                        n = "1";
-
-                    text += "["+n+"] sx: " + createImage.fon.getMatrixInfo().getScale().X + "\n";
-                    text += "["+n+"] sy: " + createImage.fon.getMatrixInfo().getScale().Y + "\n";
-                    text += "["+n+"] tx: " + createImage.fon.getMatrixInfo().getTranslate().X + "\n";
-                    text += "["+n+"] ty: " + createImage.fon.getMatrixInfo().getTranslate().Y + "\n";
-                }
+//                for (Image i: Layouts.Maps_Layout_MAIN2.get()){
+//                    String n = "";
+//                    if (i.getBitmap().equals(createImage.el1.getBitmap())){
+//                        n = "0";
+//                    }else
+//                        n = "1";
+//
+//                    text += "["+n+"] sx: " + createImage.fon.getMatrixInfo().getScale().X + "\n";
+//                    text += "["+n+"] sy: " + createImage.fon.getMatrixInfo().getScale().Y + "\n";
+//                    text += "["+n+"] tx: " + createImage.fon.getMatrixInfo().getTranslate().X + "\n";
+//                    text += "["+n+"] ty: " + createImage.fon.getMatrixInfo().getTranslate().Y + "\n";
+//                }
 
                 ClipboardManager clipboard = (ClipboardManager) FullscreenActivity.clas.getSystemService(Context.CLIPBOARD_SERVICE);
                 ClipData clip = ClipData.newPlainText("", text);

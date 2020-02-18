@@ -34,4 +34,7 @@ public class Layout {
         list.remove(image);
     }
 
+    public void reset(){
+        list = new ArrayList<Image>();
+    }
 }

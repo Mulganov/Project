@@ -1,9 +1,12 @@
 package com.mulganov.project.maps.create;
 
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.view.MotionEvent;
+import android.widget.TextView;
 
+import com.mulganov.project.layout.Layout;
 import com.mulganov.project.maps.create.DrawThread;
 import com.mulganov.project.FullscreenActivity;
 import com.mulganov.project.R;
@@ -12,6 +15,10 @@ import com.mulganov.project.tools.Image;
 import com.mulganov.project.tools.MatrixInfo;
 import com.mulganov.project.tools.Vector;
 import com.mulganov.project.tools.Vectors;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 
 public class createImage {
 
@@ -31,7 +38,7 @@ public class createImage {
     }
 
     public Image createFon(Resources resources){
-        fon = new Image(BitmapFactory.decodeResource(resources, R.drawable.main_fon_1), Layouts.Maps_MAIN, "maps") {
+        fon = new Image(BitmapFactory.decodeResource(resources, R.drawable.maps_fon_1), Layouts.Maps_MAIN, "maps") {
             @Override
             public void onTouchEvent(MotionEvent event) {
                 // TODO Auto-generated method stub
@@ -118,53 +125,46 @@ public class createImage {
         return fon;
     }
 
-    public static Image el1, el2;
-
     public void createAddElements(Resources resources){
 
-        el1 = new Image(BitmapFactory.decodeResource(resources, R.drawable.add_el1), Layouts.Maps_ADD_BAR, "maps") {
+        Layouts.Maps_Layout_ADD_BAR.reset();
+
+        int panelId = 0;
+
+        String str = "add_el_";
+
+        if (DrawThread.mode.contains("ADD_BAR_FON")) str = "fon_";
+
+        for (int i = 1; true; i++){
+            panelId = FullscreenActivity.clas.getResources().getIdentifier("maps_" + str + i,"drawable",FullscreenActivity.clas.getPackageName());
+
+            if (panelId == 0) break;
+            System.out.println(panelId);
+            final Image el = new Image(BitmapFactory.decodeResource(resources, panelId), Layouts.Maps_ADD_BAR, "maps") {
             @Override
             public void onTouchEvent(MotionEvent event) {
             }
 
-        };
+            };
 
-        el1.setMatrixInfo(new MatrixInfo(0.1f, 0.1f, 0, 0));
-        el1.setDraw(false);
-        el1.setToucheEvent(true);
-        el1.setOnClick(new Runnable() {
-            @Override
-            public void run() {
-                DrawThread.mode = "ADD_BAR_REC";
-                DrawThread.add_element = el1;
-                DrawThread.add_rec_b = new Vector(el1.getMatrixInfo().getTranslate().X, el1.getMatrixInfo().getTranslate().Y);
-                DrawThread.add_rec_e = new Vector(el1.getMatrixInfo().getTranslate().X + el1.getSize().X, el1.getMatrixInfo().getTranslate().Y + el1.getSize().Y);
-            }
-        });
+            el.setMatrixInfo(new MatrixInfo(0.1f, 0.1f, 0, 0));
+            el.setDraw(false);
+            el.setToucheEvent(true);
+            el.setOnClick(new Runnable() {
+                @Override
+                public void run() {
+                    DrawThread.mode = "ADD_BAR_REC";
+                    DrawThread.add_element = el;
+                    DrawThread.add_rec_b = new Vector(el.getMatrixInfo().getTranslate().X, el.getMatrixInfo().getTranslate().Y);
+                    DrawThread.add_rec_e = new Vector(el.getMatrixInfo().getTranslate().X + el.getSize().X, el.getMatrixInfo().getTranslate().Y + el.getSize().Y);
+                }
+            });
+            el.setId(panelId);
+        }
 
-
-
-        el2 = new Image(BitmapFactory.decodeResource(resources, R.drawable.add_el2), Layouts.Maps_ADD_BAR, "maps") {
-            @Override
-            public void onTouchEvent(MotionEvent event) {
-            }
-
-        };
-
-        el2.setMatrixInfo(new MatrixInfo(0.1f, 0.1f, 0, 0));
-        el2.setDraw(false);
-        el2.setToucheEvent(true);
-
-        el2.setOnClick(new Runnable() {
-            @Override
-            public void run() {
-                DrawThread.mode = "ADD_BAR_REC";
-                DrawThread.add_element = el2;
-                DrawThread.add_rec_b = new Vector(el2.getMatrixInfo().getTranslate().X, el2.getMatrixInfo().getTranslate().Y);
-                DrawThread.add_rec_e = new Vector(el2.getMatrixInfo().getTranslate().X + el2.getSize().X, el2.getMatrixInfo().getTranslate().Y + el2.getSize().Y);
-            }
-        });
     }
+
+
 
     public static Image createMain2(Resources resources, Image image){
         Image i = new Image(image.getBitmap(), Layouts.Maps_MAIN2, "maps") {
@@ -223,7 +223,7 @@ public class createImage {
         i.setMatrixInfo(new MatrixInfo(
                 image.getMatrixInfo().getScale().X, image.getMatrixInfo().getScale().Y,
                 image.getMatrixInfo().getTranslate().X, image.getMatrixInfo().getTranslate().Y));
-        i.setToucheEvent(true);
+        i.setToucheEvent(false);
 
         i.setVectorStartTranslate(new Vector(i.getMatrixInfo().getTranslate().X, i.getMatrixInfo().getTranslate().Y));
         i.setVectorStartScore(new Vector(i.getMatrixInfo().getScale().X, i.getMatrixInfo().getScale().Y));

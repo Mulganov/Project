@@ -67,17 +67,37 @@ public class FullscreenActivity extends AppCompatActivity{
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-
+hide();
         // Trigger the initial hide() shortly after the activity has been
         // created, to briefly hint to the user that UI controls
         // are available.
         delayedHide(100);
+
+        System.out.println("onPostCreate");
+    }
+
+    @Override
+    protected void onResume(){
+        super.onResume();
+        hide();
+
+        System.out.println("onResume");
+    }
+
+    @Override
+    protected void onRestart(){
+        super.onRestart();
+        hide();
+
+        System.out.println("onRestart");
     }
 
     @Override
     protected void onStart(){
         super.onStart();
         hide();
+
+        System.out.println("onStart");
     }
     public void hide() {
         // Hide UI first
@@ -112,7 +132,7 @@ public class FullscreenActivity extends AppCompatActivity{
         int height = display.getHeight();  // deprecated
         window = new Vector(width, height);
 
-        System.out.println(window.toString());
+        System.out.println("onCreate");
     }
 
 }

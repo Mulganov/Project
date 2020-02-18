@@ -14,6 +14,8 @@ public abstract class Image {
 
     public SupportEventImage sei = new SupportEventImage();
 
+    private int id;
+
     private Bitmap bitmap;
     private Vector vectorBegin, vectorEnd, vectorStartTranslate, vectorStartScore;
     private MatrixInfo matrixInfo;
@@ -38,6 +40,17 @@ public abstract class Image {
         }
 
         draw = true;
+    }
+
+    public void setId(int id){
+        this.id = id;
+    }
+    public int getId(){
+        return id;
+    }
+
+    public void setBitmap(Bitmap b){
+        this.bitmap = b;
     }
 
     public Bitmap getBitmap(){
@@ -86,6 +99,10 @@ public abstract class Image {
 
     public void setToucheEvent(boolean event){
         this.toucheEvent = event;
+//        if (toucheEvent)
+//            paint.setAlpha(255);
+//        else
+//            paint.setAlpha(40);
     }
 
     public void setMatrixInfo(MatrixInfo matrixInfo){

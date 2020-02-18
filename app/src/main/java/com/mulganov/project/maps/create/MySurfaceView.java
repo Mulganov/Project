@@ -7,6 +7,7 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import com.mulganov.project.FullscreenActivity;
+import com.mulganov.project.layout.Layout;
 import com.mulganov.project.layout.Layouts;
 import com.mulganov.project.tools.Image;
 import com.mulganov.project.tools.MatrixInfo;
@@ -42,7 +43,7 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
 //                break;
 //        }
 
-        if (createImage.el1.isDraw()){
+        if (Layouts.Maps_Layout_ADD_BAR.get() != null || Layouts.Maps_Layout_ADD_BAR.get().get(0).isDraw()){
             move_add_bar(event);
         }
 

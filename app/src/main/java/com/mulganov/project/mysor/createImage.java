@@ -16,7 +16,7 @@ public class createImage {
     public static Image fon;
 
     public Image createFon(Resources resources){
-        fon = new Image(BitmapFactory.decodeResource(resources, R.drawable.main_fon_1), Layouts.Maps_MAIN, "maps") {
+        fon = new Image(BitmapFactory.decodeResource(resources, R.drawable.maps_fon_1), Layouts.Maps_MAIN, "maps") {
             @Override
             public void onTouchEvent(MotionEvent event) {
                 // TODO Auto-generated method stub
