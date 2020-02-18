@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.room.Room;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -11,6 +12,7 @@ import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.mulganov.project.dp.DB;
 import com.mulganov.project.layout.Layouts;
 import com.mulganov.project.maps.create.MySurfaceView;
 import com.mulganov.project.menu.MenuView;
@@ -133,6 +135,7 @@ hide();
         window = new Vector(width, height);
 
         System.out.println("onCreate");
+
     }
 
 }

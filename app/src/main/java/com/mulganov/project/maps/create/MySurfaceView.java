@@ -43,9 +43,15 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
 //                break;
 //        }
 
-        if (Layouts.Maps_Layout_ADD_BAR.get() != null || Layouts.Maps_Layout_ADD_BAR.get().get(0).isDraw()){
-            move_add_bar(event);
+        if (Layouts.Maps_Layout_ADD_BAR.get() != null ){
+            if (Layouts.Maps_Layout_ADD_BAR.get().size() != 0){
+                if (Layouts.Maps_Layout_ADD_BAR.get().get(0).isDraw()){
+                    move_add_bar(event);
+                }
+            }
+
         }
+
 
         move_all(event);
 

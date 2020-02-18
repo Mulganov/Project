@@ -113,6 +113,7 @@ public class createImage {
             }
 
         };
+        fon.setId(R.drawable.maps_fon_1);
         fon.setMatrixInfo(new MatrixInfo(1f, 1f, 0, 0));
         fon.setVectorStartTranslate(new Vector(fon.getMatrixInfo().getTranslate().X, fon.getMatrixInfo().getTranslate().Y));
         fon.setVectorStartScore(new Vector(fon.getMatrixInfo().getScale().X, fon.getMatrixInfo().getScale().Y));
@@ -219,6 +220,7 @@ public class createImage {
 
         };
 
+        i.setId(image.getId());
         i.setDraw(true);
         i.setMatrixInfo(new MatrixInfo(
                 image.getMatrixInfo().getScale().X, image.getMatrixInfo().getScale().Y,

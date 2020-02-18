@@ -12,15 +12,24 @@ import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import androidx.room.Room;
 
 import com.mulganov.project.FullscreenActivity;
 import com.mulganov.project.R;
+import com.mulganov.project.dp.DB;
+import com.mulganov.project.dp.Element;
 import com.mulganov.project.layout.Layout;
 import com.mulganov.project.layout.Layouts;
 import com.mulganov.project.menu.MenuView;
 import com.mulganov.project.tools.Image;
 import com.mulganov.project.tools.MatrixInfo;
 import com.mulganov.project.tools.Vector;
+import com.mulganov.project.tools.Vectors;
 
 public class DrawThread extends Thread{
     private boolean runFlag = false;
@@ -43,13 +52,12 @@ public class DrawThread extends Thread{
 
     public static String mode = "";
 
-    public boolean copy;
-
     private Handler mHandler;
 
     public static Image zoom_in, zoom_out, edit, del, move, Import, export, menu, replaceFon, add;
+    public static EditText text;
 
-    public DrawThread(SurfaceHolder surfaceHolder, final Resources resources){
+    public DrawThread(final SurfaceHolder surfaceHolder, final Resources resources){
         this.surfaceHolder = surfaceHolder;
 
         window = new Vector();
@@ -63,6 +71,20 @@ public class DrawThread extends Thread{
 
         float zx;
         float zy;
+
+        text = new EditText(FullscreenActivity.clas);
+        ViewGroup.LayoutParams lp =new ViewGroup.LayoutParams((int)FullscreenActivity.window.X - 100,300);
+        text.setText("maps_default");
+        text.setX(100f);
+        text.setY(FullscreenActivity.window.Y / 2 + 200);
+        text.setTextSize(36);
+        FullscreenActivity.clas.addContentView(text, lp);
+        FullscreenActivity.clas.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                text.setVisibility(View.INVISIBLE);
+            }
+        });
 
 
         menu = new Image(BitmapFactory.decodeResource(resources, R.drawable.maps_main_bar_menu), Layouts.Maps_MAIN_BAR, "maps") {
@@ -89,6 +111,14 @@ public class DrawThread extends Thread{
                     Import.setDraw(true);
                     export.setDraw(true);
                     menu.setDraw(true);
+
+                    FullscreenActivity.clas.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            text.setVisibility(View.VISIBLE);
+                        }
+                    });
+
                 }else{
                     for (int id = Layouts.maps_number - 1; id >= 0; id--){
                         for (Image i: Layouts.getLayoutMaps(id).get()){
@@ -103,9 +133,17 @@ public class DrawThread extends Thread{
                     DrawThread.menuB = false;
                     Import.setDraw(false);
                     export.setDraw(false);
+
+                    FullscreenActivity.clas.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            text.setVisibility(View.INVISIBLE);
+                        }
+                    });
                 }
             }
         });
+
 
         add = new Image(BitmapFactory.decodeResource(resources, R.drawable.maps_main_bar_add), Layouts.Maps_MAIN_BAR, "maps") {
             @Override
@@ -320,7 +358,7 @@ public class DrawThread extends Thread{
                     }
 
                     createImage.fon.setBitmap(add_element.getBitmap());
-
+                    createImage.fon.setId(add_element.getId());
 
                 }else{
                     add.setToucheEvent(false);
@@ -361,6 +399,102 @@ public class DrawThread extends Thread{
             @Override
             public void run() {
 
+                Layouts.Maps_Layout_MAIN.reset();
+                Layouts.Maps_Layout_MAIN2.reset();
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        DB db = Room.databaseBuilder(FullscreenActivity.clas.getApplicationContext(),
+                                DB.class, text.getText() + "").build();
+
+                        for (Element el: db.getElementDoa().getAllElement()){
+                            String type = el.getType();
+
+                            int id = el.getId();
+
+                            float sx = el.getSx();
+                            float sy = el.getSy();
+
+                            float tx = el.getTx();
+                            float ty = el.getTy();
+
+                            if (type.equalsIgnoreCase("fon")){
+                                createImage.fon.setBitmap(BitmapFactory.decodeResource(resources, id));
+                                createImage.fon.setId(id);
+
+                                createImage.fon.setMatrixInfo(new MatrixInfo( sx, sy, tx, ty ));
+                            }else{
+                                Image i = new Image(BitmapFactory.decodeResource(resources, id), Layouts.Maps_MAIN2, "maps") {
+                                    @Override
+                                    public void onTouchEvent(MotionEvent event) {
+                                        int pointerCount = event.getPointerCount();
+                                        int action = event.getAction();
+                                        switch(action){
+                                            case MotionEvent.ACTION_DOWN:
+
+                                                DrawThread.main2_image_act = this;
+
+                                                this.sei.oldMove = new Vector(event.getX(0), event.getY(0));
+
+                                                break;
+                                            case MotionEvent.ACTION_UP:
+                                                break;
+                                            case MotionEvent.ACTION_POINTER_UP:
+                                                break;
+                                            case MotionEvent.ACTION_MOVE:
+                                                System.out.println("0");
+                                                if (DrawThread.main2_image_act == this && DrawThread.main_bar_edit_image_act == DrawThread.move){
+                                                    System.out.println("1");
+                                                    if (pointerCount == 1){
+                                                        System.out.println("2");
+                                                        Vector newMove = new Vector(event.getX(0), event.getY(0));
+
+                                                        Vector move = Vectors.minus(this.sei.oldMove, newMove);
+
+                                                        //System.out.println();
+
+                                                        this.sei.x -= move.X;
+                                                        this.sei.y -= move.Y;
+
+                                                        this.sei.oldMove = newMove;
+                                                    }
+                                                }
+                                                break;
+                                            case MotionEvent.ACTION_CANCEL:
+                                                break;
+                                            case MotionEvent.ACTION_OUTSIDE:
+                                                break;
+                                            default:
+
+                                        }
+                                        this.setMatrixInfo(new MatrixInfo(
+                                                this.getVectorStartScore().X * this.sei.zoom,
+                                                this.getVectorStartScore().Y * this.sei.zoom,
+                                                this.getVectorStartTranslate().X + this.sei.x,
+                                                this.getVectorStartTranslate().Y + this.sei.y));
+                                    }
+
+                                };
+
+                                i.setId(id);
+                                i.setDraw(true);
+
+                                i.setToucheEvent(false);
+
+                                i.setMatrixInfo(new MatrixInfo( sx, sy, tx, ty ));
+
+                                i.setVectorStartTranslate(new Vector(i.getMatrixInfo().getTranslate().X, i.getMatrixInfo().getTranslate().Y));
+                                i.setVectorStartScore(new Vector(i.getMatrixInfo().getScale().X, i.getMatrixInfo().getScale().Y));
+
+                            }
+                        }
+
+                        db.close();
+                    }
+                }).start();
+
+                menu.onClick();
             }
         });
         Import.setDraw(false);
@@ -377,43 +511,58 @@ public class DrawThread extends Thread{
         export.setOnClick(new Runnable() {
             @Override
             public void run() {
-                String text = "";
 
-                text += "[Fon] id: " + "[id]\n";
-                text += "[Fon] sx: " + createImage.fon.getMatrixInfo().getScale().X + "\n";
-                text += "[Fon] sy: " + createImage.fon.getMatrixInfo().getScale().Y + "\n";
-                text += "[Fon] tx: " + createImage.fon.getMatrixInfo().getTranslate().X + "\n";
-                text += "[Fon] ty: " + createImage.fon.getMatrixInfo().getTranslate().Y + "\n";
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        DB db = Room.databaseBuilder(FullscreenActivity.clas.getApplicationContext(),
+                                DB.class, text.getText() + "").build();
+
+                        for (Element el: db.getElementDoa().getAllElement()){
+                            db.getElementDoa().delete(el);
+                        }
+
+                        Element fon = new Element();
+
+                        fon.setId(createImage.fon.getId());
+                        fon.setType("fon");
+                        MatrixInfo mi = createImage.fon.getMatrixInfo();
+                        fon.setSx(mi.getScale().X);
+                        fon.setSy(mi.getScale().Y);
+                        fon.setTx(mi.getTranslate().X);
+                        fon.setTy(mi.getTranslate().Y);
+
+                        fon.setKey(0);
+
+                        db.getElementDoa().insertAll(fon);
+
+                        int ii = 1;
+                        for (Image i: Layouts.Maps_Layout_MAIN2.get()){
+                            Element el = new Element();
+
+                            el.setId(createImage.fon.getId());
+                            el.setType("main2");
+                            el.setKey(ii);
+                            MatrixInfo m = createImage.fon.getMatrixInfo();
+                            el.setSx(m.getScale().X);
+                            el.setSy(m.getScale().Y);
+                            el.setTx(m.getTranslate().X);
+                            el.setTy(m.getTranslate().Y);
+
+                            db.getElementDoa().insertAll(el);
+                            ii++;
+                        }
 
 
-                text += "[0] id: " + "[id]\n";
-                text += "[1] id: " + "[id]\n";
+                        db.close();
+                    }
 
-//                for (Image i: Layouts.Maps_Layout_MAIN2.get()){
-//                    String n = "";
-//                    if (i.getBitmap().equals(createImage.el1.getBitmap())){
-//                        n = "0";
-//                    }else
-//                        n = "1";
-//
-//                    text += "["+n+"] sx: " + createImage.fon.getMatrixInfo().getScale().X + "\n";
-//                    text += "["+n+"] sy: " + createImage.fon.getMatrixInfo().getScale().Y + "\n";
-//                    text += "["+n+"] tx: " + createImage.fon.getMatrixInfo().getTranslate().X + "\n";
-//                    text += "["+n+"] ty: " + createImage.fon.getMatrixInfo().getTranslate().Y + "\n";
-//                }
-
-                ClipboardManager clipboard = (ClipboardManager) FullscreenActivity.clas.getSystemService(Context.CLIPBOARD_SERVICE);
-                ClipData clip = ClipData.newPlainText("", text);
-                clipboard.setPrimaryClip(clip);
-
-                copy = true;
+                }).start();
 
                 View v = new MenuView(FullscreenActivity.clas);
                 FullscreenActivity.clas.mContentView = v;
                 FullscreenActivity.clas.setContentView(v);
                 FullscreenActivity.clas.hide();
-
-
             }
         });
         export.setDraw(false);
@@ -422,6 +571,103 @@ public class DrawThread extends Thread{
         prevTime = System.currentTimeMillis();
 
         menuB = false;
+
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                DB db = Room.databaseBuilder(FullscreenActivity.clas.getApplicationContext(),
+                        DB.class, "maps_default").build();
+
+                for (Element el: db.getElementDoa().getAllElement()){
+                    String type = el.getType();
+
+                    int id = el.getId();
+
+                    float sx = el.getSx();
+                    float sy = el.getSy();
+
+                    float tx = el.getTx();
+                    float ty = el.getTy();
+
+                    if (type.equalsIgnoreCase("fon")){
+                        createImage.fon.setBitmap(BitmapFactory.decodeResource(resources, id));
+                        createImage.fon.setId(id);
+
+                        createImage.fon.setMatrixInfo(new MatrixInfo(sx, sy, tx, ty));
+                        createImage.fon.setVectorStartTranslate(new Vector(createImage.fon.getMatrixInfo().getTranslate().X, createImage.fon.getMatrixInfo().getTranslate().Y));
+                        createImage.fon.setVectorStartScore(new Vector(createImage.fon.getMatrixInfo().getScale().X, createImage.fon.getMatrixInfo().getScale().Y));
+
+                    }else{
+                        Image i = new Image(BitmapFactory.decodeResource(resources, id), Layouts.Maps_MAIN2, "maps") {
+                            @Override
+                            public void onTouchEvent(MotionEvent event) {
+                                int pointerCount = event.getPointerCount();
+                                int action = event.getAction();
+                                switch(action){
+                                    case MotionEvent.ACTION_DOWN:
+
+                                        DrawThread.main2_image_act = this;
+
+                                        this.sei.oldMove = new Vector(event.getX(0), event.getY(0));
+
+                                        break;
+                                    case MotionEvent.ACTION_UP:
+                                        break;
+                                    case MotionEvent.ACTION_POINTER_UP:
+                                        break;
+                                    case MotionEvent.ACTION_MOVE:
+                                        System.out.println("0");
+                                        if (DrawThread.main2_image_act == this && DrawThread.main_bar_edit_image_act == DrawThread.move){
+                                            System.out.println("1");
+                                            if (pointerCount == 1){
+                                                System.out.println("2");
+                                                Vector newMove = new Vector(event.getX(0), event.getY(0));
+
+                                                Vector move = Vectors.minus(this.sei.oldMove, newMove);
+
+                                                //System.out.println();
+
+                                                this.sei.x -= move.X;
+                                                this.sei.y -= move.Y;
+
+                                                this.sei.oldMove = newMove;
+                                            }
+                                        }
+                                        break;
+                                    case MotionEvent.ACTION_CANCEL:
+                                        break;
+                                    case MotionEvent.ACTION_OUTSIDE:
+                                        break;
+                                    default:
+
+                                }
+                                this.setMatrixInfo(new MatrixInfo(
+                                        this.getVectorStartScore().X * this.sei.zoom,
+                                        this.getVectorStartScore().Y * this.sei.zoom,
+                                        this.getVectorStartTranslate().X + this.sei.x,
+                                        this.getVectorStartTranslate().Y + this.sei.y));
+                            }
+
+                        };
+
+                        i.setId(id);
+                        i.setDraw(true);
+
+                        i.setToucheEvent(false);
+
+                        i.setMatrixInfo(new MatrixInfo( sx, sy, tx, ty ));
+
+                        i.setVectorStartTranslate(new Vector(i.getMatrixInfo().getTranslate().X, i.getMatrixInfo().getTranslate().Y));
+                        i.setVectorStartScore(new Vector(i.getMatrixInfo().getScale().X, i.getMatrixInfo().getScale().Y));
+
+                    }
+                }
+
+                db.close();
+            }
+        }).start();
+
 
     }
 
@@ -456,10 +702,6 @@ public class DrawThread extends Thread{
                             export.draw(canvas);
                             menu.draw(canvas);
 
-                            if (copy){
-                                p.setTextSize(46);
-                                canvas.drawText("Конфиг успешно скопирован", 800, 800, p);
-                            }
 
                         }else{
                             for (int id = 0; id < Layouts.maps_number; id++){
