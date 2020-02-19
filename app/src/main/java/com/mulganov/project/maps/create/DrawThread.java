@@ -589,7 +589,7 @@ public class DrawThread extends Thread{
 
                     float tx = el.getTx();
                     float ty = el.getTy();
-
+                    
                     if (type.equalsIgnoreCase("fon")){
                         createImage.fon.setBitmap(BitmapFactory.decodeResource(resources, id));
                         createImage.fon.setId(id);
